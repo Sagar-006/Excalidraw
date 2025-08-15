@@ -1,16 +1,17 @@
 {
-  "name": "@repo/common",
+  "name": "@repo/prisma",
   "version": "1.0.0",
   "main": "index.js",
-  "exports": {
-    "./types":"./src/types.ts"
+  "exports":{
+      "./prisma":"./prisma/schema.prisma"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@prisma/client": "6.14.0",
     "@repo/typescript-config": "workspace:*",
-    "zod": "^4.0.17"
+    "prisma": "^6.14.0"
   },
   "keywords": [],
   "author": "",
