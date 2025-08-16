@@ -3,10 +3,12 @@ import jwt from 'jsonwebtoken';
 import { middleware } from './middleware';
 import { JWT_SECRET } from '@repo/backend-common/config';
 import {CreateSchema, SigninSchema, CreateRoomSchema} from '@repo/common/types';
-// import { User } from '@repo/prisma/prisma'
+import  {prismaClient} from '@repo/db/client'
 
 const app = express();
 app.use(express.json());
+
+const Client =prismaClient;
 
 interface userType {
     username:string,
@@ -24,10 +26,19 @@ app.post("/signup",async(req,res) => {
         })
         return
     }
+
+    const createUser = await Client.user.create({
+      data: {
+        email: req.body.email,
+        password: req.body.password,
+        name:req.body.name,
+        photo:req.body.photo,
+      },
+    });
     
     res.json({
-        message:"you are signed up",
-        users
+        message:"you are signed up!"
+        
     })
 })
 
@@ -40,34 +51,53 @@ app.post("/signin",async(req,res) => {
         })
         return
     }
-    
+    const username = req.body.username
 
-    // const findUser = users.filter(((user:any) => user.username == username && user.password == password ));
-    const userId = 'as'
-    if(!userId) return 
+    const findUser = await Client.user.findFirst({
+        where:{
+            email:req.body.email,
+            password:req.body.password,
+
+        }
+    })
     
+        if(!findUser){
+            return
+        } 
+        console.log(findUser)
+    
+        const userId = findUser.id; 
+
         const token = jwt.sign({userId},JWT_SECRET)
-        
+      
         res.json({
             message:"you are signin",
             token,
         })
     
-
-    // res.json({
-    //     message:"you are signin",
-    //     findUser
-    // })
 })
 
-app.post("/room",middleware,(req,res) => {
+app.post("/room",middleware,async(req,res) => {
     console.log("on room route")
     // @ts-ignore
-    const id = req.userId ;
-    console.log(id)
+    const userId:any = req.userId ;
+    console.log(userId)
+
+    const addRoom = await Client.room.create({
+        data:{
+            adminId:userId,
+            slug:req.body.slug,
+
+
+        }
+    })
+
+    if(!addRoom){
+        return
+    }
 
     res.json({
-        id
+        message:"Room added successfully!"
     })
 })
 

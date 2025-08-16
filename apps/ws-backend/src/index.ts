@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws";
 import  jwt, { JwtPayload }  from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config";
+// import {prismaClinet} from '@repo/'
 
 const wss = new WebSocketServer({port:8080});
 
@@ -14,13 +15,20 @@ wss.on('connection',function connection(ws,request){
     const token = queryParams.get('token') || "";
 
     const decoded = jwt.verify(token,JWT_SECRET)
+    console.log(typeof decoded)
+    
+    if(typeof decoded === "string"){
+        ws.close();
+        return
+    }
 
-    if(!decoded){
+    if(!decoded || !decoded.userId){
         ws.close();
         return
     }
     
     ws.on('message',function message(data){
+        console.log(data.toString())
         ws.send("pong");
     });
 

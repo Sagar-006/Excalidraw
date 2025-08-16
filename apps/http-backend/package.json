@@ -15,7 +15,7 @@
     "jsonwebtoken": "^9.0.2",
     "@repo/backend-common": "workspace:*",
     "@repo/common": "workspace:*",
-    "@repo/prisma":"workspace:*"
+    "@repo/db":"workspace:*"
   },
   "keywords": [],
   "author": "",
