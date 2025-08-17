@@ -80,6 +80,7 @@ app.post("/signin", async (req, res) => {
     // const userId = findUser.id;
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    // console.log(typeof token)
 
     res.json({
       message: "you are signin",
@@ -91,22 +92,32 @@ app.post("/signin", async (req, res) => {
 });
 
 app.post("/room", middleware, async (req, res) => {
-  console.log("on room route");
+  // console.log("on room route");
+  const parseData = CreateRoomSchema.safeParse(req.body)
+  if(!parseData.success){
+    res.json({
+      message:"Enter valid Name"
+    })
+    return;
+  }
+
+  // @ts-ignore
+  const userId = req.userId;
  try{
    // @ts-ignore
-   const userId: any = req.userId;
+   
    console.log(userId);
 
    const addRoom = await Client.room.create({
      data: {
-       adminId: userId,
-       slug: req.body.slug,
+       slug: parseData.data.slug,
+       adminId: userId
      },
    });
 
-   if (!addRoom) {
-     return;
-   }
+  //  if (!addRoom) {
+  //    return;
+  //  }
 
    res.json({
      message: "Room added successfully!",
@@ -118,5 +129,30 @@ app.post("/room", middleware, async (req, res) => {
     })
  }
 });
+
+app.get("/chats/:roomId", async(req,res) => {
+  try{
+    const roomId = Number(req.params.roomId);
+    const messages = await prismaClient.chat.findMany({
+      where:{
+        roomId:roomId
+      },
+      orderBy:{
+        id:"desc"
+      },
+      take:100
+    })
+
+    res.json({
+      messages
+    })
+  }
+  catch(e){
+    res.json({
+      message:"something is missing!",
+      messages :[]
+    })
+  }
+})
 
 app.listen(4000);
