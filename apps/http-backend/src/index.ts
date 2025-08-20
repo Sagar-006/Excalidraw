@@ -8,9 +8,13 @@ import {
   CreateRoomSchema,
 } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
+import cors from 'cors'
+
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 
 const Client = prismaClient;
 
@@ -153,13 +157,14 @@ app.get("/chats/:roomId", async(req,res) => {
 
 app.get("/room/:slug",async(req,res) => {
   const slug = req.params.slug;
-  const roomId = prismaClient.room.findFirst({
+  const room =await prismaClient.room.findFirst({
     where:{
       slug:slug
     }
   })
+  console.log(room)
   res.json({
-    roomId
+    room
   });
 })
 
