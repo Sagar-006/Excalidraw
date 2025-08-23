@@ -2,7 +2,7 @@ import { BACKEND_URL } from "@/config";
 import axios from "axios";
 
 type Shape =
-  | {
+  {
       type: "rect";
       x: number;
       y: number;
@@ -19,7 +19,8 @@ type Shape =
 export async function initDraw(
   canvas: HTMLCanvasElement,
   roomId: string,
-  socket: WebSocket
+  socket: WebSocket,
+  currentShape:string,
 ) {
   const ctx = canvas.getContext("2d");
   let existingShapes: Shape[] = await getExistingShapes(roomId);
