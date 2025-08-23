@@ -22,10 +22,8 @@ export async function initDraw(
   socket: WebSocket
 ) {
   const ctx = canvas.getContext("2d");
-
   let existingShapes: Shape[] = await getExistingShapes(roomId);
 //   console.log(existingShapes)
-
   if (!ctx) {
     return;
   }

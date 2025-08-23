@@ -1,3 +1,4 @@
+'use client'
 import { initDraw } from "@/draw";
 import { useEffect, useRef } from "react";
 

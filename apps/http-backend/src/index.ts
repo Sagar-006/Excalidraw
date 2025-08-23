@@ -26,6 +26,7 @@ const users: any = [];
 
 app.post("/signup", async (req, res) => {
   const parseData = CreateSchema.safeParse(req.body);
+  console.log(parseData)
 
   if (!parseData.success) {
     res.json({

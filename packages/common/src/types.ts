@@ -4,7 +4,7 @@ export const CreateSchema = z.object({
   email: z.string().min(3).max(50),
   password: z.string().min(6),
   name: z.string().min(3),
-  photo:z.string()
+  photo:z.string().optional()
 });
 
 export const SigninSchema = z.object({
