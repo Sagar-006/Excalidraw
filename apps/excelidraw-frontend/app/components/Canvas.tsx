@@ -2,9 +2,10 @@
 import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import {Circle, CircleArrowDown, Pencil, RectangleHorizontal} from "lucide-react"
+import {Circle, CircleAlert, CircleArrowDown, Pencil, RectangleHorizontal} from "lucide-react"
+import { Game } from "@/draw/Game";
 
-type currentShapes = 'pencil' | 'rect' | 'circle';
+export type Tool = 'pencil' | 'rect' | 'circle';
 export function Canvas({
     roomId,
     socket
@@ -13,12 +14,24 @@ export function Canvas({
     roomId:string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [selectedTool,setSelectedTool] = useState<currentShapes>('pencil');
+  const [game,setGame] = useState<Game>();
+  const [selectedTool,setSelectedTool] = useState<Tool>('pencil');
+
+  useEffect(() => {
+    game?.setTool(selectedTool)
+  },[selectedTool])
 
   useEffect(() => {
     if (canvasRef.current) {
-      initDraw(canvasRef.current, roomId, socket,selectedTool);
+      const g = new Game(canvasRef.current,roomId,socket);
+      setGame(g);
+
+      return () => {
+        g.destroy();
+      };
     }
+
+    
   }, [canvasRef]);
 
   return (
@@ -28,22 +41,41 @@ export function Canvas({
         width={window.innerWidth}
         height={window.innerHeight}
       ></canvas>
-      <div className=" text-black flex fixed bottom-5 right-5 bg-gray-200 p-3 rounded shadow-lg z-50 gap-x-6">
         <TopBar selectedTool={selectedTool} setSelectedTool={setSelectedTool}/>
-      </div>
+      
     </div>
   );
 }
 
 function TopBar ({selectedTool,setSelectedTool}:{
-  selectedTool:currentShapes,
-  setSelectedTool:() => void
+  selectedTool:Tool,
+  setSelectedTool:(s:Tool) => void
 }) {
   return (
-    <div>
-      <IconButton icon={<Pencil />} onClick={() => {}}></IconButton>
-      <IconButton icon={<RectangleHorizontal />} onClick={() => {}}></IconButton>
-      <IconButton icon={<CircleArrowDown />} onClick={() => {}}></IconButton>
+    <div className=" text-black flex fixed top-5 left-8 p-3 rounded shadow-lg z-50 gap-x-6">
+      <div className="flex gap-x-3">
+        <IconButton
+          activated={selectedTool === "pencil"}
+          icon={<Pencil />}
+          onClick={() => {
+            setSelectedTool("pencil");
+          }}
+        ></IconButton>
+        <IconButton
+          activated={selectedTool === "rect"}
+          icon={<RectangleHorizontal />}
+          onClick={() => {
+            setSelectedTool("rect");
+          }}
+        ></IconButton>
+        <IconButton
+          activated={selectedTool === "circle"}
+          icon={<Circle />}
+          onClick={() => {
+            setSelectedTool("circle");
+          }}
+        ></IconButton>
+      </div>
     </div>
   );
 }
