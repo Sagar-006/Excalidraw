@@ -167,10 +167,10 @@ export class Game {
   }
 
   initMouseHandlers() {
-    this.canvas.addEventListener("mousedown",this.mouseDownHandler.bind(this))
+    this.canvas.addEventListener("mousedown",this.mouseDownHandler)
 
-    this.canvas.addEventListener("mouseup", this.mouseUpHandler.bind(this));
+    this.canvas.addEventListener("mouseup", this.mouseUpHandler);
 
-    this.canvas.addEventListener("mousemove", this.mouseMoveHandler.bind(this));
+    this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
   }
 }

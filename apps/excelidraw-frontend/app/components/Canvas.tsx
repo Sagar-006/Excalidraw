@@ -17,6 +17,10 @@ export function Canvas({
   const [game,setGame] = useState<Game>();
   const [selectedTool,setSelectedTool] = useState<Tool>('pencil');
 
+  if(!localStorage.getItem('token')){
+    return <div>Signin please</div>
+  }
+
   useEffect(() => {
     game?.setTool(selectedTool)
   },[selectedTool])

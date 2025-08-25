@@ -9,8 +9,10 @@ export  function RoomCanvas({roomId}:{roomId:string}) {
     // const roomId = roomId;
 
     useEffect(() => {
+      const token = localStorage.getItem('token');
+      console.log(token)
       const ws = new WebSocket(
-        `${WS_URL}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiNzRmZjU0OC1lNWFkLTQ3MTktYmU1NS02NDM3ZDFhMzJjMjMiLCJpYXQiOjE3NTU5NjE0MTl9.3b9CFTrhPQjmKhzXSbAnkuZOuWhBez3DbdKEOV0jpb4`
+        `${WS_URL}?token=${token}`
       );
 
       ws.onopen = () => {
