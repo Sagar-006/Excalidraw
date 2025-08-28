@@ -26,6 +26,9 @@ export function AuthPage({ isSignin }: { isSignin: boolean }) {
     setIsClient(true);
 
     const token = localStorage.getItem("token");
+    if(!token){
+      router.replace('/signin')
+    }
     if (token) {
       router.replace("/dashboard");
     }
@@ -113,7 +116,7 @@ export function AuthPage({ isSignin }: { isSignin: boolean }) {
         <Button
           size="lg"
           variant="primary"
-          className="w-full font-bold tracking-wide mt-2 p-1 rounded-sm"
+          className="w-full  font-bold tracking-wide mt-2 p-1 rounded-sm"
           onClick={() => signUpAndSignin({ name, email, password })}
         >
           {isSignin ? "Sign In" : "Sign Up"}

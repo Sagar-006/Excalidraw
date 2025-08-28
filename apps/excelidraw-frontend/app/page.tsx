@@ -9,12 +9,20 @@ export default function LandingPage() {
       <section className="relative min-h-screen flex items-center justify-center">
         {/* Auth buttons */}
         <div className="absolute top-6 right-6 z-20 flex items-center space-x-3">
-          <Button className="gradient-hero" variant="ghost" size="sm">
-            Sign In
-          </Button>
-          <Button variant="default" size="sm">
-            Sign Up
-          </Button>
+          <Link href={"/signin"}>
+            <Button
+              className="gradient-hero bg-purple-700 p-1 px-2 rounded text-white"
+              variant="ghost"
+              size="sm"
+            >
+              Sign In
+            </Button>
+          </Link>
+          <Link href={"/signup"}>
+            <Button variant="hero" size="sm">
+              Sign Up
+            </Button>
+          </Link>
         </div>
 
         <div className="container px-6 py-20">
@@ -28,13 +36,19 @@ export default function LandingPage() {
             {/* Title */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
               Virtual whiteboard for{" "}
-              <span className="bg-gradient-hero bg-clip-text text-transparent">
+              <span
+                style={{
+                  background: "var(--gradient-hero)",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
                 sketching
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-muted-foreground bg-gradient-hero max-w-2xl mx-auto leading-relaxed">
               Create beautiful hand-drawn like diagrams, wireframes, and
               collaborate in real-time. Free, open source, and private by
               default.
@@ -42,7 +56,10 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Button size="lg" className="group shadow-glow">
+              <Button
+                size="lg"
+                className="group shadow-glow bg--gradient-hero p-2 bg-purple-700 text-white rounded "
+              >
                 Start Drawing Free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>

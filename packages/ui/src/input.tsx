@@ -5,6 +5,7 @@ interface InputProps {
     placeholder:string;
     className?:string;
     onChange?:(event :React.ChangeEvent<HTMLInputElement>) => void ;
+    width?:string;
 
 
 }
@@ -12,10 +13,10 @@ interface InputProps {
 export const Input = ({type,placeholder,className,onChange}:InputProps) =>{
        return (
          <input
-         onChange={onChange}
+           onChange={onChange}
            type={type}
            placeholder={placeholder}
-           className="w-full  text-black border-1 rounded p-1"
+           className={`${className}  text-black border-1 rounded p-1`}
          ></input>
        );
         
