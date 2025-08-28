@@ -1,11 +1,7 @@
-// 'use client'
+// import CreateRom from "../components/createRom";
 
-import { Button } from "@repo/ui/button"
-import { Input } from "@repo/ui/input"
+import CreateRom from "../components/createRom";
 
-export default function createRoom ()  {
-    return <div>
-        <Input className="w-[300px]" type="text" placeholder="room-name"/>
-        <Button size="default" onClick={() => }>Create-Room</Button>
-    </div>
+export default function createRoom () {
+    return <CreateRom />
 }
