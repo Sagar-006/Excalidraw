@@ -167,8 +167,28 @@ app.get("/room/:slug",async(req,res) => {
   res.json({
     room
   });
-})
+});
 
+app.get('/allrooms',middleware, async(req,res) => {
+  // @ts-ignore
+  const adminId = req.userId;
+  if(!adminId){
+    res.json({
+      message:"User not found!"
+    })
+  }
+  const rooms = await prismaClient.room.findMany({
+    where:{
+      adminId
+    }
+  });
+
+  res.json({
+    rooms
+  })
+  console.log(rooms)
+  
+});
 
 
 app.listen(4000);
