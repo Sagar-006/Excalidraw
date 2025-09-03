@@ -1,5 +1,6 @@
 import { Tool } from "@/app/components/Canvas";
 import { getExistingShapes } from "./http";
+import { Shapes } from "lucide-react";
 // import React from "react";
 
 type Shape =
@@ -18,7 +19,7 @@ type Shape =
     }
   | {
       type: "pencil";
-      points:{x:number,y:number};
+      points:{x:number,y:number}[];
       // startX: number;
       // startY: number;
       // endX:number;
@@ -48,6 +49,7 @@ export class Game {
     this.initHandlers();
     this.clearCanvas();
     this.initMouseHandlers();
+    this.drawExistingShapes();
   }
   destroy() {
     this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
@@ -69,7 +71,7 @@ export class Game {
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
-      if ((message.type = "chat")) {
+      if ((message.type === "chat")) {
         const parsedShape = JSON.parse(message.message);
         this.existingShapes.push(parsedShape.shape);
         this.clearCanvas();
@@ -98,9 +100,41 @@ export class Game {
         );
         this.ctx.stroke();
         this.ctx.closePath();
+      } else if (shape.type === "pencil") {
+        this.ctx.strokeStyle = "rgba(255,255,255)";
+        this.ctx.beginPath();
+        const points: any = shape.points;
+        if (points) {
+          this.ctx.moveTo(points[0].x, points[0].y);
+          for (let i = 1; i < points.length; i++) {
+            this.ctx.lineTo(points[i].x, points[i].y);
+          }
+          this.ctx.stroke();
+          this.ctx.closePath();
+        }
       }
     });
+
+    
   }
+
+  
+    
+  
+
+  drawPencilStroke(points: { x: number; y: number }[]) {
+    // const points:any = Shapes.points;
+  if (points.length === 0) return;
+  this.ctx.strokeStyle = "white";
+  this.ctx.beginPath();
+  this.ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) {
+    this.ctx.lineTo(points[i].x, points[i].y);
+  }
+  this.ctx.stroke();
+  this.ctx.closePath();
+}
+
 
   mouseDownHandler = (e: MouseEvent) => {
     this.clicked = true;
@@ -134,6 +168,12 @@ export class Game {
         centerX: this.startX + radius,
         centerY: this.startY + radius,
       };
+    }else if(this.selectedTool === 'pencil' && this.currentPencilPoints.length > 1){
+      const shape:Shape = {
+        type:'pencil',
+        points:this.currentPencilPoints,
+      };
+      this.currentPencilPoints = [];
     }
     if (!shape) {
       return;
@@ -171,7 +211,8 @@ export class Game {
       }else if(this.selectedTool === "pencil"){
         this.currentPencilPoints.push({x:e.clientX,y:e.clientY});
         this.clearCanvas();
-        this.
+        this.drawExistingShapes();
+        this.drawPencilStroke(this.currentPencilPoints);
       }
     }
   };
