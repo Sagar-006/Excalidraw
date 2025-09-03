@@ -1,5 +1,6 @@
 import { Tool } from "@/app/components/Canvas";
 import { getExistingShapes } from "./http";
+// import React from "react";
 
 type Shape =
   | {
@@ -17,10 +18,11 @@ type Shape =
     }
   | {
       type: "pencil";
-      startX: number;
-      startY: number;
-      endX:number;
-      endY:number;
+      points:{x:number,y:number};
+      // startX: number;
+      // startY: number;
+      // endX:number;
+      // endY:number;
     }; 
 
 export class Game {
@@ -33,6 +35,7 @@ export class Game {
   private startX = 0;
   private startY = 0;
   private selectedTool: Tool = "circle";
+  private currentPencilPoints: { x: number; y: number }[] = [];
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -99,13 +102,17 @@ export class Game {
     });
   }
 
-  mouseDownHandler = (e) => {
+  mouseDownHandler = (e: MouseEvent) => {
     this.clicked = true;
-    this.startX = e.screenX;
-    this.startY = e.screenY;
-  }
+    this.startX = e.clientX;
+    this.startY = e.clientY;
 
-  mouseUpHandler =(e) => {
+    if (this.selectedTool === "pencil") {
+      this.currentPencilPoints = [{ x: e.clientX, y: e.clientY }];
+    }
+  };
+
+  mouseUpHandler = (e: MouseEvent) => {
     this.clicked = false;
     const width = e.clientX - this.startX;
     const height = e.clientY - this.startY;
@@ -142,10 +149,9 @@ export class Game {
         roomId: this.roomId,
       })
     );
-      
-  }
+  };
 
-  mouseMoveHandler = (e) =>{
+  mouseMoveHandler = (e: MouseEvent) => {
     if (this.clicked) {
       const width = e.clientX - this.startX;
       const height = e.clientY - this.startY;
@@ -162,12 +168,16 @@ export class Game {
         this.ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
         this.ctx.stroke();
         this.ctx.closePath();
+      }else if(this.selectedTool === "pencil"){
+        this.currentPencilPoints.push({x:e.clientX,y:e.clientY});
+        this.clearCanvas();
+        this.
       }
     }
-  }
+  };
 
   initMouseHandlers() {
-    this.canvas.addEventListener("mousedown",this.mouseDownHandler)
+    this.canvas.addEventListener("mousedown", this.mouseDownHandler);
 
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
 

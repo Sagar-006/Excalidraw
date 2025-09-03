@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
 import {Circle, CircleAlert, CircleArrowDown, Pencil, RectangleHorizontal} from "lucide-react"
 import { Game } from "@/draw/Game";
+import Link from "next/link";
 
 export type Tool = 'pencil' | 'rect' | 'circle';
 export function Canvas({
@@ -18,7 +19,11 @@ export function Canvas({
   const [selectedTool,setSelectedTool] = useState<Tool>('pencil');
 
   if(!localStorage.getItem('token')){
-    return <div>Signin please</div>
+    return (
+      <Link href={'/signin'}>
+        <button>Signin please</button>
+      </Link>
+    );
   }
 
   useEffect(() => {
@@ -35,7 +40,6 @@ export function Canvas({
       };
     }
 
-    
   }, [canvasRef]);
 
   return (
