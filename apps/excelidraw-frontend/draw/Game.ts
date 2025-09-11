@@ -24,6 +24,12 @@ type Shape =
       // startY: number;
       // endX:number;
       // endY:number;
+    }
+    | {
+      type:'text';
+      x:number;
+      y:number;
+      content:string;
     }; 
 
 export class Game {
@@ -35,8 +41,12 @@ export class Game {
   private clicked: boolean;
   private startX = 0;
   private startY = 0;
-  private selectedTool: Tool = "circle";
+  private selectedTool: Tool = "pencil";
   private currentPencilPoints: { x: number; y: number }[] = [];
+  private isTyping = false;
+  private currentText = "";
+  private textStartX = 0;
+  private textStartY = 0;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -49,7 +59,7 @@ export class Game {
     this.initHandlers();
     this.clearCanvas();
     this.initMouseHandlers();
-    this.drawExistingShapes();
+    // this.drawExistingShapes();
   }
   destroy() {
     this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
@@ -59,7 +69,7 @@ export class Game {
     this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
   }
 
-  setTool(tool: "circle" | "rect" | "pencil") {
+  setTool(tool: "circle" | "rect" | "pencil" | "text") {
     this.selectedTool = tool;
   }
   async init() {
@@ -71,7 +81,7 @@ export class Game {
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
-      if ((message.type === "chat")) {
+      if (message.type === "chat") {
         const parsedShape = JSON.parse(message.message);
         this.existingShapes.push(parsedShape.shape);
         this.clearCanvas();
@@ -112,29 +122,26 @@ export class Game {
           this.ctx.stroke();
           this.ctx.closePath();
         }
+      } else if (shape.type === "text") {
+        this.ctx.fillStyle = "white";
+        this.ctx.font = "20px Arial";
+        this.ctx.fillText(shape.content, shape.x, shape.y);
       }
     });
-
-    
   }
-
-  
-    
-  
 
   drawPencilStroke(points: { x: number; y: number }[]) {
     // const points:any = Shapes.points;
-  if (points.length === 0) return;
-  this.ctx.strokeStyle = "white";
-  this.ctx.beginPath();
-  this.ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length; i++) {
-    this.ctx.lineTo(points[i].x, points[i].y);
+    if (points.length === 0) return;
+    this.ctx.strokeStyle = "white";
+    this.ctx.beginPath();
+    this.ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      this.ctx.lineTo(points[i].x, points[i].y);
+    }
+    this.ctx.stroke();
+    this.ctx.closePath();
   }
-  this.ctx.stroke();
-  this.ctx.closePath();
-}
-
 
   mouseDownHandler = (e: MouseEvent) => {
     this.clicked = true;
@@ -143,6 +150,14 @@ export class Game {
 
     if (this.selectedTool === "pencil") {
       this.currentPencilPoints = [{ x: e.clientX, y: e.clientY }];
+    } else if (this.selectedTool === "text") {
+      this.isTyping=true;
+      this.currentText = "";
+      this.textStartX=e.clientX;
+      this.textStartY=e.clientY;
+      this.clearCanvas();
+
+      }
     }
   };
 
@@ -168,10 +183,13 @@ export class Game {
         centerX: this.startX + radius,
         centerY: this.startY + radius,
       };
-    }else if(this.selectedTool === 'pencil' && this.currentPencilPoints.length > 1){
-      const shape:Shape = {
-        type:'pencil',
-        points:this.currentPencilPoints,
+    } else if (
+      this.selectedTool === "pencil" &&
+      this.currentPencilPoints.length > 1
+    ) {
+      Shape: shape = {
+        type: "pencil",
+        points: this.currentPencilPoints,
       };
       this.currentPencilPoints = [];
     }
@@ -208,10 +226,10 @@ export class Game {
         this.ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
         this.ctx.stroke();
         this.ctx.closePath();
-      }else if(this.selectedTool === "pencil"){
-        this.currentPencilPoints.push({x:e.clientX,y:e.clientY});
+      } else if (this.selectedTool === "pencil") {
+        this.currentPencilPoints.push({ x: e.clientX, y: e.clientY });
         this.clearCanvas();
-        this.drawExistingShapes();
+        // this.drawExistingShapes();
         this.drawPencilStroke(this.currentPencilPoints);
       }
     }

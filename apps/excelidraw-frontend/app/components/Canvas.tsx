@@ -1,12 +1,12 @@
 'use client'
-import { initDraw } from "@/draw";
+// import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import {Circle, CircleAlert, CircleArrowDown, Pencil, RectangleHorizontal} from "lucide-react"
+import {Circle, Text, Pencil, RectangleHorizontal} from "lucide-react"
 import { Game } from "@/draw/Game";
 import Link from "next/link";
 
-export type Tool = 'pencil' | 'rect' | 'circle';
+export type Tool = 'pencil' | 'rect' | 'circle' | 'text';
 export function Canvas({
     roomId,
     socket
@@ -83,6 +83,13 @@ function TopBar ({selectedTool,setSelectedTool}:{
             setSelectedTool("circle");
           }}
         ></IconButton>
+        <IconButton activated = {selectedTool === 'text'} 
+          icon={<Text/>} 
+          onClick={() => {
+            setSelectedTool('text')
+          }}>
+
+        </IconButton>
       </div>
     </div>
   );
