@@ -30,7 +30,14 @@ type Shape =
       x:number;
       y:number;
       content:string;
-    }; 
+    } 
+    | {
+      type:'line';
+      startX:number;
+      startY:number;
+      endX:number;
+      endY:number
+    }
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -41,7 +48,7 @@ export class Game {
   private clicked: boolean;
   private startX = 0;
   private startY = 0;
-  private selectedTool: "rect" | "circle" | "pencil" | "text" = "pencil";
+  private selectedTool: "rect" | "circle" | "pencil" | "line" | 'text' = "pencil";
   private currentPencilPoints: { x: number; y: number }[] = [];
   private isTyping = false;
   private currentText = "";
@@ -69,7 +76,7 @@ export class Game {
     window.removeEventListener("keydown", this.keyboardHandler);
   }
 
-  setTool(tool: "circle" | "rect" | "pencil" | "text") {
+  setTool(tool: "circle" | "rect" | "pencil" | "text" | "line") {
     this.selectedTool = tool;
   }
 
@@ -125,6 +132,14 @@ export class Game {
         this.ctx.fillStyle = "white";
         this.ctx.font = "20px Arial";
         this.ctx.fillText(shape.content, shape.x, shape.y);
+      }
+      else if(shape.type === 'line'){
+        this.ctx.strokeStyle = 'rgba(255,255,255)';
+        this.ctx.beginPath();
+        this.ctx.moveTo(shape.startX,shape.startY);
+        this.ctx.lineTo(shape.endX,shape.endY);
+        this.ctx.stroke();
+        this.ctx.closePath();
       }
     });
 
@@ -187,6 +202,10 @@ export class Game {
       this.textStartX = e.clientX;
       this.textStartY = e.clientY;
       this.clearCanvas();
+    }else if (this.selectedTool === 'line'){
+      this.startX = e.clientX;
+      this.startY = e.clientY;
+      this.clicked = true;
     }
   };
 
@@ -230,6 +249,15 @@ export class Game {
       this.currentText = "";
       this.isTyping = false;
     }
+    else if(this.selectedTool === 'line'){
+       shape = {
+        type: "line",
+        startX: this.startX,
+        startY: this.startY,
+        endX:e.clientX,
+        endY:e.clientY,
+      };
+    }
     if (!shape) {
       return;
     }
@@ -266,6 +294,14 @@ export class Game {
         this.currentPencilPoints.push({ x: e.clientX, y: e.clientY });
         this.clearCanvas();
         this.drawPencilStroke(this.currentPencilPoints);
+      } else if (this.selectedTool === "line") {
+        this.clearCanvas();
+        this.ctx.strokeStyle = "rgba(255,255,255)";
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.startX, this.startY);
+        this.ctx.lineTo(e.clientX, e.clientY);
+        this.ctx.stroke();
+        this.ctx.closePath();
       }
     }
   };
