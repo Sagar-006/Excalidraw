@@ -2,7 +2,7 @@
 // import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
-import {Circle, Text, Pencil, RectangleHorizontal} from "lucide-react"
+import {Circle, Type, Pencil, RectangleHorizontal} from "lucide-react"
 import { Game } from "@/draw/Game";
 import Link from "next/link";
 
@@ -84,7 +84,7 @@ function TopBar ({selectedTool,setSelectedTool}:{
           }}
         ></IconButton>
         <IconButton activated = {selectedTool === 'text'} 
-          icon={<Text/>} 
+          icon={<Type/>} 
           onClick={() => {
             setSelectedTool('text')
           }}>
